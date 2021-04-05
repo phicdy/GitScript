@@ -20,4 +20,14 @@ selected_file = line_files[int(input_file)].split()[0]
 print(selected_file)
 
 proc_selected_file_diff = subprocess.run('git diff ' + selected_previous_commit + '..' + selected_commit + ' -- ' + selected_file, shell=True,  stdout=PIPE, stderr=PIPE, text=True)
-print(proc_selected_file_diff.stdout)
+
+lines_diff = proc_selected_file_diff.stdout.split("\n")
+for line in lines_diff:
+    if line.startswith("+"):
+        # green
+        print('\033[32m' + line + '\033[0m')
+    elif line.startswith("-"):
+        # red
+        print('\033[31m' + line + '\033[0m')
+    else:
+        print(line)
