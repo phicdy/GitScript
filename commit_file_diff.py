@@ -1,7 +1,7 @@
 import subprocess
 from subprocess import PIPE
 
-proc = subprocess.run('git log -3 --pretty=format:"%h %s %d"', shell=True,  stdout=PIPE, stderr=PIPE, text=True)
+proc = subprocess.run('git log -15 --pretty=format:"%h %s %d"', shell=True,  stdout=PIPE, stderr=PIPE, text=True)
 lines = proc.stdout.split("\n")
 [print(str(i) + ") " + commit) for i, commit in enumerate(lines)]
 
