@@ -1,23 +1,25 @@
 import subprocess
 from subprocess import PIPE
 
-proc = subprocess.run('git log -15 --pretty=format:"%h %s %d"', shell=True,  stdout=PIPE, stderr=PIPE, text=True)
+# For when last commit is selected, print +1 commit
+proc = subprocess.run('git log -16 --pretty=format:"%h %s %d"', shell=True,  stdout=PIPE, stderr=PIPE, text=True)
 lines = proc.stdout.split("\n")
-[print(str(i) + ") " + commit) for i, commit in enumerate(lines)]
 
-input_commit_index = input("\nEnter commit index\n")
-selected_commit = lines[int(input_commit_index)].split()[0]
-selected_previous_commit = lines[int(input_commit_index)+1].split()[0]
+proc2 = subprocess.run('git log -15 --pretty=format:"%h %s %d" | peco', shell=True,  stdout=PIPE, stderr=PIPE, text=True)
+selected = proc2.stdout
+print(selected)
 
-proc_diff = subprocess.run('git diff ' + selected_previous_commit + '..' + selected_commit + ' --name-only', shell=True,  stdout=PIPE, stderr=PIPE, text=True)
-line_files = proc_diff.stdout.strip().split("\n")
+selected_commit = proc2.stdout.split()[0]
 
-print("\nFiles:")
-[print(str(i) + ") " + file) for i, file in enumerate(line_files)]
+for i, line in enumerate(lines):
+    if line.split()[0] == selected_commit:
+        selected_previous_commit = lines[i+1].split()[0]
+        break
 
-input_file = input("\nEnter file index\n")
-selected_file = line_files[int(input_file)].split()[0]
+proc_file = subprocess.run('git diff ' + selected_previous_commit + '..' + selected_commit + ' --name-only | peco', shell=True,  stdout=PIPE, stderr=PIPE, text=True)
+selected_file = proc_file.stdout
 print(selected_file)
+
 
 proc_selected_file_diff = subprocess.run('git diff ' + selected_previous_commit + '..' + selected_commit + ' -- ' + selected_file, shell=True,  stdout=PIPE, stderr=PIPE, text=True)
 
